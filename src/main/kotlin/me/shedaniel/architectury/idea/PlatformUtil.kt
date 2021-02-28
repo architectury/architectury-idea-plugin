@@ -41,12 +41,7 @@ val PsiMethod.commonMethods: List<PsiMethod>
         return JavaPsiFacade.getInstance(project).findPackage(commonPkg)
             ?.getClasses(getScopeFor(this))
             ?.asSequence()
-            ?.flatMap {
-                sequence {
-                    yield(it)
-                    yieldAll(it.innerClasses.asSequence())
-                }
-            }
+            ?.flatMap { it.asSequenceWithInnerClasses() }
             ?.filter { it.binaryName?.replace("$", "") == baseClass }
             ?.mapNotNull {
                 it.findMethodBySignature(this, false)
@@ -87,6 +82,15 @@ val PsiClass.binaryName: String?
     get() =
         if (containingClass != null) containingClass!!.binaryName + "$" + name
         else qualifiedName
+
+/**
+ * Gets a sequence of this class and all its inner classes, recursed infinitely.
+ */
+fun PsiClass.asSequenceWithInnerClasses(): Sequence<PsiClass> =
+    sequence {
+        yield(this@asSequenceWithInnerClasses)
+        yieldAll(innerClasses.asSequence().flatMap { it.asSequenceWithInnerClasses() })
+    }
 
 /**
  * Gets the searching scope for searching for classes related to the [element].
