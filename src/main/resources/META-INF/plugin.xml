@@ -1,0 +1,26 @@
+<idea-plugin>
+    <id>me.shedaniel.architectury</id>
+    <name>Architectury</name>
+    <vendor url="https://github.com/architectury">Architectury</vendor>
+
+    <description><![CDATA[
+    Adds helpers for the cross-platform Minecraft modding framework Architectury.
+    ]]></description>
+
+    <change-notes><![CDATA[
+    Initial release.
+    ]]></change-notes>
+
+    <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.java</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <codeInsight.lineMarkerProvider language="JAVA" implementationClass="me.shedaniel.architectury.idea.CommonMethodLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language="JAVA" implementationClass="me.shedaniel.architectury.idea.PlatformMethodLineMarkerProvider"/>
+    </extensions>
+
+    <actions>
+        <!-- Add your actions here -->
+    </actions>
+</idea-plugin>
