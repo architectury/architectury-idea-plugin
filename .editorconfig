@@ -11,6 +11,7 @@ trim_trailing_whitespace = true
 [*.{kt,kts}]
 # I have no clue why this has to be set separately...
 ij_continuation_indent_size = 4
+ij_kotlin_name_count_to_use_star_import = 10000
 
 [*.yml]
 indent_size = 2

@@ -1,7 +1,9 @@
 package me.shedaniel.architectury.idea
 
+import com.intellij.openapi.module.ModuleUtil
 import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiClass
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.PsiModifier
 import com.intellij.psi.search.GlobalSearchScope
@@ -37,7 +39,7 @@ val PsiMethod.commonMethods: List<PsiMethod>
         val baseClass = "$commonPkg.$commonClassName"
 
         return JavaPsiFacade.getInstance(project).findPackage(commonPkg)
-            ?.classes
+            ?.getClasses(getScopeFor(this))
             ?.asSequence()
             ?.flatMap {
                 sequence {
@@ -70,7 +72,7 @@ val PsiMethod.platformMethods: List<PsiMethod>
             val implementationClassName = "$head.$platform.${tail}Impl"
 
             JavaPsiFacade.getInstance(project)
-                .findClasses(implementationClassName, GlobalSearchScope.projectScope(project))
+                .findClasses(implementationClassName, getScopeFor(this))
                 .asSequence()
                 .mapNotNull { clazz ->
                     clazz.findMethodBySignature(this, false)
@@ -85,3 +87,12 @@ val PsiClass.binaryName: String?
     get() =
         if (containingClass != null) containingClass!!.binaryName + "$" + name
         else qualifiedName
+
+/**
+ * Gets the searching scope for searching for classes related to the [element].
+ * If the element's corresponding module is not null (= an element in this project),
+ * uses the project scope. Otherwise uses the all scope.
+ */
+private fun getScopeFor(element: PsiElement): GlobalSearchScope =
+    if (ModuleUtil.findModuleForPsiElement(element) != null) GlobalSearchScope.projectScope(element.project)
+    else GlobalSearchScope.allScope(element.project)
