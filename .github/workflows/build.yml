@@ -13,3 +13,5 @@ jobs:
         uses: gradle/wrapper-validation-action@v1
       - name: Build
         run: ./gradlew build
+        if: |
+          !contains(github.event.head_commit.message, '[ci skip]') && !contains(github.event.pull_request.title, '[ci skip]')
