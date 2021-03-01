@@ -20,9 +20,9 @@ val PsiMethod.isStatic: Boolean
  * True if this method is a common, untransformed `@ExpectPlatform` method.
  */
 val PsiMethod.isCommonExpectPlatform: Boolean
-    get() = isStatic
-        && (hasAnnotation(EXPECT_PLATFORM) || hasAnnotation(OLD_EXPECT_PLATFORM))
-        && !hasAnnotation(EXPECT_PLATFORM_TRANSFORMED)
+    get() = isStatic &&
+        (hasAnnotation(EXPECT_PLATFORM) || hasAnnotation(OLD_EXPECT_PLATFORM)) &&
+        !hasAnnotation(EXPECT_PLATFORM_TRANSFORMED)
 
 // TODO: Cache these somehow? Both commonMethods and platformMethods might be really slow and could benefit from caching.
 
