@@ -28,7 +28,7 @@ class PlatformMethodLineMarkerProvider : LineMarkerProviderDescriptor(), GutterI
                     { "Go to common declaration" },
                     this,
                     GutterIconRenderer.Alignment.LEFT,
-                    { "Go to common definition" }
+                    { "Go to common declaration" }
                 )
             }
         }
