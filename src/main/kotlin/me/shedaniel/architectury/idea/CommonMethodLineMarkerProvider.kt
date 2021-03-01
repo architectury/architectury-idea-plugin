@@ -43,7 +43,7 @@ class CommonMethodLineMarkerProvider : LineMarkerProviderDescriptor(), GutterIco
         if (implementations.isNotEmpty()) {
             DefaultGutterIconNavigationHandler<PsiIdentifier>(
                 implementations,
-                "Choose implementation method for ${method.name}"
+                "<html>Choose Implementation of <b>${method.name}</b> (${implementations.size} methods found)"
             ).navigate(e, elt)
         }
     }

@@ -43,7 +43,7 @@ class PlatformMethodLineMarkerProvider : LineMarkerProviderDescriptor(), GutterI
         if (commonMethods.isNotEmpty()) {
             DefaultGutterIconNavigationHandler<PsiIdentifier>(
                 commonMethods,
-                "Choose common declaration for ${method.name}"
+                "<html>Choose Common Declaration of <b>${method.name}</b> (${commonMethods.size} methods found)"
             ).navigate(e, elt)
         }
     }
