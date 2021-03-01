@@ -9,13 +9,20 @@ import com.intellij.psi.PsiModifier
 import com.intellij.psi.search.GlobalSearchScope
 
 const val EXPECT_PLATFORM = "me.shedaniel.architectury.annotations.ExpectPlatform"
+const val OLD_EXPECT_PLATFORM = "me.shedaniel.architectury.ExpectPlatform"
+const val EXPECT_PLATFORM_TRANSFORMED = "me.shedaniel.architectury.annotations.ExpectPlatform.Transformed"
 val PLATFORMS = setOf("fabric", "forge")
 
 val PsiMethod.isStatic: Boolean
     get() = modifierList.hasModifierProperty(PsiModifier.STATIC)
 
-val PsiMethod.hasExpectPlatform: Boolean
-    get() = isStatic && hasAnnotation(EXPECT_PLATFORM)
+/**
+ * True if this method is a common, untransformed `@ExpectPlatform` method.
+ */
+val PsiMethod.isCommonExpectPlatform: Boolean
+    get() = isStatic &&
+        (hasAnnotation(EXPECT_PLATFORM) || hasAnnotation(OLD_EXPECT_PLATFORM)) &&
+        !hasAnnotation(EXPECT_PLATFORM_TRANSFORMED)
 
 // TODO: Cache these somehow? Both commonMethods and platformMethods might be really slow and could benefit from caching.
 
@@ -46,7 +53,7 @@ val PsiMethod.commonMethods: List<PsiMethod>
             ?.mapNotNull {
                 it.findMethodBySignature(this, false)
             }
-            ?.filter { it.hasExpectPlatform }
+            ?.filter { it.isCommonExpectPlatform }
             ?.toList()
             ?: emptyList()
     }
@@ -56,7 +63,7 @@ val PsiMethod.commonMethods: List<PsiMethod>
  */
 val PsiMethod.platformMethods: List<PsiMethod>
     get() {
-        if (!hasExpectPlatform) return emptyList()
+        if (!isCommonExpectPlatform) return emptyList()
 
         val containingClassName = containingClass?.binaryName ?: return emptyList()
         val parts = containingClassName.split('.')
