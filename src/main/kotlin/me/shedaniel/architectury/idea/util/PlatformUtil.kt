@@ -2,6 +2,7 @@ package me.shedaniel.architectury.idea.util
 
 import com.intellij.openapi.module.ModuleUtil
 import com.intellij.psi.JavaPsiFacade
+import com.intellij.psi.PsiAnnotation
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiMethod
@@ -23,6 +24,12 @@ val PsiMethod.isCommonExpectPlatform: Boolean
     get() = isStatic &&
         (hasAnnotation(EXPECT_PLATFORM) || hasAnnotation(OLD_EXPECT_PLATFORM)) &&
         !hasAnnotation(EXPECT_PLATFORM_TRANSFORMED)
+
+/**
+ * Finds the `@ExpectPlatform` annotation of this method.
+ */
+fun PsiMethod.findExpectPlatform(): PsiAnnotation? =
+    annotations.firstOrNull { it.hasQualifiedName(EXPECT_PLATFORM) || it.hasQualifiedName(OLD_EXPECT_PLATFORM) }
 
 // TODO: Cache these somehow? Both commonMethods and platformMethods might be really slow and could benefit from caching.
 

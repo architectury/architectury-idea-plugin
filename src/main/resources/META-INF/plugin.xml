@@ -18,6 +18,13 @@
     <extensions defaultExtensionNs="com.intellij">
         <codeInsight.lineMarkerProvider language="JAVA" implementationClass="me.shedaniel.architectury.idea.gutter.CommonMethodLineMarkerProvider"/>
         <codeInsight.lineMarkerProvider language="JAVA" implementationClass="me.shedaniel.architectury.idea.gutter.PlatformMethodLineMarkerProvider"/>
+
+        <localInspection language="JAVA"
+                         displayName="Unimplemented @ExpectPlatform method"
+                         groupName="Architectury"
+                         enabledByDefault="true"
+                         level="WARNING"
+                         implementationClass="me.shedaniel.architectury.idea.inspection.UnimplementedExpectPlatformInspection"/>
     </extensions>
 
     <actions>
