@@ -1,4 +1,4 @@
-package me.shedaniel.architectury.idea
+package me.shedaniel.architectury.idea.gutter
 
 import com.intellij.codeInsight.daemon.DefaultGutterIconNavigationHandler
 import com.intellij.codeInsight.daemon.GutterIconNavigationHandler
@@ -9,6 +9,7 @@ import com.intellij.openapi.editor.markup.GutterIconRenderer
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiIdentifier
 import com.intellij.psi.PsiMethod
+import me.shedaniel.architectury.idea.util.commonMethods
 import java.awt.event.MouseEvent
 import javax.swing.Icon
 

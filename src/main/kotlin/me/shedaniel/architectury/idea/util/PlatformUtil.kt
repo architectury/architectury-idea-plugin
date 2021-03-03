@@ -1,4 +1,4 @@
-package me.shedaniel.architectury.idea
+package me.shedaniel.architectury.idea.util
 
 import com.intellij.openapi.module.ModuleUtil
 import com.intellij.psi.JavaPsiFacade

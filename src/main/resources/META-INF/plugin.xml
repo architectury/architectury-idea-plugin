@@ -16,8 +16,8 @@
     <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <codeInsight.lineMarkerProvider language="JAVA" implementationClass="me.shedaniel.architectury.idea.CommonMethodLineMarkerProvider"/>
-        <codeInsight.lineMarkerProvider language="JAVA" implementationClass="me.shedaniel.architectury.idea.PlatformMethodLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language="JAVA" implementationClass="me.shedaniel.architectury.idea.gutter.CommonMethodLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language="JAVA" implementationClass="me.shedaniel.architectury.idea.gutter.PlatformMethodLineMarkerProvider"/>
     </extensions>
 
     <actions>
