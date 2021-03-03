@@ -17,7 +17,7 @@ class UnimplementedExpectPlatformInspection : LocalInspectionTool() {
                 if (method.isCommonExpectPlatform && method.platformMethods.isEmpty()) {
                     holder.registerProblem(
                         method.findExpectPlatform() ?: method,
-                        ArchitecturyBundle.getMessage("inspection.missingExpectPlatform", method.name),
+                        ArchitecturyBundle["inspection.missingExpectPlatform", method.name],
                         ImplementExpectPlatformFix
                     )
                 }
