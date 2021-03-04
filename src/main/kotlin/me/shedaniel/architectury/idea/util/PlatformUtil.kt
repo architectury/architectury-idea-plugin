@@ -105,14 +105,6 @@ fun PsiClass.asSequenceWithInnerClasses(): Sequence<PsiClass> =
         yieldAll(innerClasses.asSequence().flatMap { it.asSequenceWithInnerClasses() })
     }
 
-fun PsiClass.getPlatformImplementationName(platform: Platform): String {
-    val className = binaryName ?: error("Could not get binary name of $this")
-    val parts = className.split('.')
-    val head = parts.dropLast(1).joinToString(separator = ".")
-    val tail = parts.last().replace("$", "")
-    return "$head.${platform.id}.${tail}Impl"
-}
-
 /**
  * Gets the searching scope for searching for classes related to the [element].
  * If the element's corresponding module is not null (= an element in this project),
