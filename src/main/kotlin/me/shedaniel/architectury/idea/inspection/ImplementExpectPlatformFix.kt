@@ -3,13 +3,16 @@ package me.shedaniel.architectury.idea.inspection
 import com.intellij.codeInsight.generation.GenerateMembersUtil
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
+import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.psi.JavaDirectoryService
 import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.PsiModifier
 import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.ui.components.JBLabel
 import me.shedaniel.architectury.idea.util.ArchitecturyBundle
 import me.shedaniel.architectury.idea.util.EXPECT_PLATFORM
 import me.shedaniel.architectury.idea.util.OLD_EXPECT_PLATFORM
@@ -24,12 +27,21 @@ object ImplementExpectPlatformFix : LocalQuickFix {
         val elementFactory = JavaPsiFacade.getElementFactory(project)
 
         var generatedMethod: PsiMethod? = null
+        val missingPlatforms = ArrayList<String>(2)
 
         for (platform in Platform.values()) {
+            if (!platform.isIn(project)) continue
+
             val implClassName = platform.getImplementationName(method.containingClass ?: continue)
             val implClass = facade.findClass(implClassName, GlobalSearchScope.projectScope(project)) ?: run {
                 val packageName = implClassName.substringBeforeLast('.')
-                val pkg = facade.findPackage(packageName) ?: return@run null // TODO: Create the package too
+                val pkg = facade.findPackage(packageName)
+
+                if (pkg == null) {
+                    missingPlatforms += packageName
+                    return@run null
+                }
+
                 val dir = pkg.directories.first()
                 JavaDirectoryService.getInstance().createClass(dir, implClassName.substringAfterLast('.'))
             } ?: continue
@@ -49,7 +61,16 @@ object ImplementExpectPlatformFix : LocalQuickFix {
             }
         }
 
-        generatedMethod?.navigate(true)
+        if (missingPlatforms.isEmpty()) {
+            generatedMethod?.navigate(true)
+        } else {
+            val label = JBLabel(ArchitecturyBundle["fix.missingPlatformPackages", missingPlatforms.joinToString()])
+
+            JBPopupFactory.getInstance()
+                .createComponentPopupBuilder(label, null)
+                .createPopup()
+                .showInBestPositionFor(FileEditorManager.getInstance(project).selectedTextEditor!!)
+        }
     }
 
     private tailrec fun findMethod(element: PsiElement): PsiMethod? =
