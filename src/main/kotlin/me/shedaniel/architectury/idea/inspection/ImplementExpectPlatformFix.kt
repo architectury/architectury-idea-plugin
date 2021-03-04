@@ -6,6 +6,7 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.popup.JBPopupFactory
+import com.intellij.pom.Navigatable
 import com.intellij.psi.JavaDirectoryService
 import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiElement
@@ -31,7 +32,7 @@ class ImplementExpectPlatformFix(private val platforms: List<Platform>) : LocalQ
         val facade = JavaPsiFacade.getInstance(project)
         val elementFactory = JavaPsiFacade.getElementFactory(project)
         val missingPackages = ArrayList<String>()
-        var navigated = false
+        var navigationTarget: Navigatable? = null
 
         for (platform in platforms) {
             val implClassName = platform.getImplementationName(method.containingClass!!)
@@ -57,18 +58,21 @@ class ImplementExpectPlatformFix(private val platforms: List<Platform>) : LocalQ
             template.modifierList.setModifierProperty(PsiModifier.STATIC, true)
 
             val inserted = GenerateMembersUtil.insert(implClass, template, implClass.methods.lastOrNull(), false)
-            if (!navigated && inserted as? PsiMethod != null) {
-                inserted.navigate(true)
-                navigated = true
+            if (navigationTarget == null) {
+                navigationTarget = inserted as? Navigatable
             }
         }
 
-        val label = JBLabel(ArchitecturyBundle["fix.missingPlatformPackages", missingPackages.joinToString()])
+        if (missingPackages.isEmpty()) {
+            navigationTarget?.navigate(true)
+        } else {
+            val label = JBLabel(ArchitecturyBundle["fix.missingPlatformPackages", missingPackages.joinToString()])
 
-        return JBPopupFactory.getInstance()
-            .createComponentPopupBuilder(label, null)
-            .createPopup()
-            .showInBestPositionFor(FileEditorManager.getInstance(project).selectedTextEditor!!)
+            JBPopupFactory.getInstance()
+                .createComponentPopupBuilder(label, null)
+                .createPopup()
+                .showInBestPositionFor(FileEditorManager.getInstance(project).selectedTextEditor!!)
+        }
     }
 
     private tailrec fun findMethod(element: PsiElement): PsiMethod? =
