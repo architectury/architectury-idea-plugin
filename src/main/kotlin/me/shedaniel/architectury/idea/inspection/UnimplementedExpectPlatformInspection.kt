@@ -1,7 +1,6 @@
 package me.shedaniel.architectury.idea.inspection
 
 import com.intellij.codeInspection.LocalInspectionTool
-import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.JavaElementVisitor
 import com.intellij.psi.PsiElementVisitor
@@ -26,12 +25,9 @@ class UnimplementedExpectPlatformInspection : LocalInspectionTool() {
                     }
 
                     if (missingPlatforms.isNotEmpty()) {
-                        val fixes = missingPlatforms.mapTo(ArrayList<LocalQuickFix>(), ::ImplementExpectPlatformFix)
+                        val fixes = missingPlatforms.mapTo(ArrayList()) { ImplementExpectPlatformFix(listOf(it)) }
                         if (fixes.size > 1) {
-                            fixes.add(
-                                0,
-                                CompoundFix(ArchitecturyBundle["inspection.implementExpectPlatform"], ArrayList(fixes))
-                            )
+                            fixes.add(0, ImplementExpectPlatformFix(missingPlatforms))
                         }
 
                         holder.registerProblem(
