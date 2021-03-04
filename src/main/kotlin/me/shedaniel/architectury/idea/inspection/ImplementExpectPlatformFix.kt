@@ -12,7 +12,7 @@ import com.intellij.psi.search.GlobalSearchScope
 import me.shedaniel.architectury.idea.util.ArchitecturyBundle
 import me.shedaniel.architectury.idea.util.EXPECT_PLATFORM
 import me.shedaniel.architectury.idea.util.OLD_EXPECT_PLATFORM
-import me.shedaniel.architectury.idea.util.PLATFORMS
+import me.shedaniel.architectury.idea.util.Platform
 import me.shedaniel.architectury.idea.util.getPlatformImplementationName
 
 object ImplementExpectPlatformFix : LocalQuickFix {
@@ -23,7 +23,7 @@ object ImplementExpectPlatformFix : LocalQuickFix {
         val facade = JavaPsiFacade.getInstance(project)
         val elementFactory = JavaPsiFacade.getElementFactory(project)
 
-        val generatedMethods = PLATFORMS.mapNotNull method@{ platform ->
+        val generatedMethods = Platform.values().mapNotNull method@{ platform ->
             // TODO: Generate impl classes
             val implClass = facade.findClass(
                 method.containingClass?.getPlatformImplementationName(platform) ?: return@method null,

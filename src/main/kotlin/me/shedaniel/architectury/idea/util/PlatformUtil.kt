@@ -12,7 +12,6 @@ import com.intellij.psi.search.GlobalSearchScope
 const val EXPECT_PLATFORM = "me.shedaniel.architectury.annotations.ExpectPlatform"
 const val OLD_EXPECT_PLATFORM = "me.shedaniel.architectury.ExpectPlatform"
 const val EXPECT_PLATFORM_TRANSFORMED = "me.shedaniel.architectury.annotations.ExpectPlatform.Transformed"
-val PLATFORMS = setOf("fabric", "forge")
 
 val PsiMethod.isStatic: Boolean
     get() = modifierList.hasModifierProperty(PsiModifier.STATIC)
@@ -45,7 +44,7 @@ val PsiMethod.commonMethods: List<PsiMethod>
         val name = clazz.binaryName ?: return emptyList()
         val pkg = name.substringBeforeLast('.')
 
-        val nameMatches = name.endsWith("Impl") && PLATFORMS.any { pkg.endsWith(".$it") }
+        val nameMatches = name.endsWith("Impl") && Platform.values().any { pkg.endsWith(".${it.id}") }
         if (!nameMatches) return emptyList()
 
         val commonPkg = pkg.substringBeforeLast('.')
@@ -77,8 +76,8 @@ val PsiMethod.platformMethods: List<PsiMethod>
         val head = parts.dropLast(1).joinToString(separator = ".")
         val tail = parts.last().replace("$", "")
 
-        return PLATFORMS.asSequence().flatMap { platform ->
-            val implementationClassName = "$head.$platform.${tail}Impl"
+        return Platform.values().asSequence().flatMap { platform ->
+            val implementationClassName = "$head.${platform.id}.${tail}Impl"
 
             JavaPsiFacade.getInstance(project)
                 .findClasses(implementationClassName, getScopeFor(this))
@@ -106,12 +105,12 @@ fun PsiClass.asSequenceWithInnerClasses(): Sequence<PsiClass> =
         yieldAll(innerClasses.asSequence().flatMap { it.asSequenceWithInnerClasses() })
     }
 
-fun PsiClass.getPlatformImplementationName(platform: String): String {
+fun PsiClass.getPlatformImplementationName(platform: Platform): String {
     val className = binaryName ?: error("Could not get binary name of $this")
     val parts = className.split('.')
     val head = parts.dropLast(1).joinToString(separator = ".")
     val tail = parts.last().replace("$", "")
-    return "$head.$platform.${tail}Impl"
+    return "$head.${platform.id}.${tail}Impl"
 }
 
 /**
