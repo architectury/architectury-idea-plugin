@@ -9,6 +9,7 @@ import com.intellij.openapi.editor.markup.GutterIconRenderer
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiIdentifier
 import com.intellij.psi.PsiMethod
+import me.shedaniel.architectury.idea.util.ArchitecturyBundle
 import me.shedaniel.architectury.idea.util.platformMethods
 import java.awt.event.MouseEvent
 import javax.swing.Icon
@@ -26,10 +27,10 @@ class CommonMethodLineMarkerProvider : LineMarkerProviderDescriptor(), GutterIco
                     element,
                     element.textRange,
                     icon,
-                    { "Go to platform implementation" },
+                    { ArchitecturyBundle["architectury.gutter.goToPlatform"] },
                     this,
                     GutterIconRenderer.Alignment.LEFT,
-                    { "Go to platform implementation" }
+                    { ArchitecturyBundle["architectury.gutter.goToPlatform"] }
                 )
             }
         }
@@ -44,7 +45,7 @@ class CommonMethodLineMarkerProvider : LineMarkerProviderDescriptor(), GutterIco
         if (implementations.isNotEmpty()) {
             DefaultGutterIconNavigationHandler<PsiIdentifier>(
                 implementations,
-                "<html>Choose Implementation of <b>${method.name}</b> (${implementations.size} methods found)"
+                "<html>" + ArchitecturyBundle["architectury.gutter.chooseImpl", "<b>${method.name}</b>", implementations.size]
             ).navigate(e, elt)
         }
     }
