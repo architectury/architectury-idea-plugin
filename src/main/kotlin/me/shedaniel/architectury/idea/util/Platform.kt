@@ -3,10 +3,11 @@ package me.shedaniel.architectury.idea.util
 import com.intellij.openapi.project.Project
 import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiClass
+import org.jetbrains.annotations.PropertyKey
 
-enum class Platform(val id: String) {
-    FABRIC("fabric"),
-    FORGE("forge");
+enum class Platform(val id: String, @PropertyKey(resourceBundle = BUNDLE) private val translationKey: String) {
+    FABRIC("fabric", "platform.fabric"),
+    FORGE("forge", "platform.forge");
 
     /**
      * Gets the name of the [clazz]'s implementation version for this platform.
@@ -31,5 +32,5 @@ enum class Platform(val id: String) {
         }
     }
 
-    override fun toString() = ArchitecturyBundle["platform.$id"]
+    override fun toString() = ArchitecturyBundle[translationKey]
 }
