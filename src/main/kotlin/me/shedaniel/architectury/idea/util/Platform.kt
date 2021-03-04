@@ -30,4 +30,6 @@ enum class Platform(val id: String) {
             FABRIC -> hasPackage("net.fabricmc.api")
         }
     }
+
+    override fun toString() = ArchitecturyBundle["platform.$id"]
 }

@@ -1,25 +1,45 @@
 package me.shedaniel.architectury.idea.inspection
 
 import com.intellij.codeInspection.LocalInspectionTool
+import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.JavaElementVisitor
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.PsiMethod
 import me.shedaniel.architectury.idea.util.ArchitecturyBundle
+import me.shedaniel.architectury.idea.util.Platform
 import me.shedaniel.architectury.idea.util.findExpectPlatform
 import me.shedaniel.architectury.idea.util.isCommonExpectPlatform
-import me.shedaniel.architectury.idea.util.platformMethods
+import me.shedaniel.architectury.idea.util.platformMethodsByPlatform
 
 class UnimplementedExpectPlatformInspection : LocalInspectionTool() {
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor =
         object : JavaElementVisitor() {
             override fun visitMethod(method: PsiMethod) {
-                if (method.isCommonExpectPlatform && method.platformMethods.isEmpty()) {
-                    holder.registerProblem(
-                        method.findExpectPlatform() ?: method,
-                        ArchitecturyBundle["inspection.missingExpectPlatform", method.name],
-                        ImplementExpectPlatformFix
-                    )
+                if (method.isCommonExpectPlatform) {
+                    val allPlatformMethods = method.platformMethodsByPlatform
+                    val missingPlatforms = Platform.values().filter { platform ->
+                        if (!platform.isIn(method.project)) return@filter false
+
+                        val methods = allPlatformMethods[platform]
+                        methods == null || methods.isEmpty()
+                    }
+
+                    if (missingPlatforms.isNotEmpty()) {
+                        val fixes = missingPlatforms.mapTo(ArrayList<LocalQuickFix>(), ::ImplementExpectPlatformFix)
+                        if (fixes.size > 1) {
+                            fixes.add(
+                                0,
+                                CompoundFix(ArchitecturyBundle["inspection.implementExpectPlatform"], ArrayList(fixes))
+                            )
+                        }
+
+                        holder.registerProblem(
+                            method.findExpectPlatform() ?: method,
+                            ArchitecturyBundle["inspection.missingExpectPlatform", method.name, missingPlatforms.joinToString()],
+                            *fixes.toTypedArray()
+                        )
+                    }
                 }
             }
         }

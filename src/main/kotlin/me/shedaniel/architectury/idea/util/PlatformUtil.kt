@@ -67,17 +67,13 @@ val PsiMethod.commonMethods: List<PsiMethod>
 /**
  * The platform implementations of this common method.
  */
-val PsiMethod.platformMethods: List<PsiMethod>
+val PsiMethod.platformMethodsByPlatform: Map<Platform, List<PsiMethod>>
     get() {
-        if (!isCommonExpectPlatform) return emptyList()
+        if (!isCommonExpectPlatform) return emptyMap()
+        val clazz = containingClass ?: return emptyMap()
 
-        val containingClassName = containingClass?.binaryName ?: return emptyList()
-        val parts = containingClassName.split('.')
-        val head = parts.dropLast(1).joinToString(separator = ".")
-        val tail = parts.last().replace("$", "")
-
-        return Platform.values().asSequence().flatMap { platform ->
-            val implementationClassName = "$head.${platform.id}.${tail}Impl"
+        return Platform.values().associateWith {
+            val implementationClassName = it.getImplementationName(clazz)
 
             JavaPsiFacade.getInstance(project)
                 .findClasses(implementationClassName, getScopeFor(this))
@@ -85,8 +81,15 @@ val PsiMethod.platformMethods: List<PsiMethod>
                 .mapNotNull { clazz ->
                     clazz.findMethodBySignature(this, false)
                 }
-        }.toList()
+                .toList()
+        }
     }
+
+/**
+ * The platform implementations of this common method.
+ */
+val PsiMethod.platformMethods: Collection<PsiMethod>
+    get() = platformMethodsByPlatform.flatMap { (_, methods) -> methods }
 
 /**
  * The binary name of this class in dot-dollar format (eg. `a.b.C$D`)

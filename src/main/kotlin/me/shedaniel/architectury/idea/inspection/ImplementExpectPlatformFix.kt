@@ -18,59 +18,42 @@ import me.shedaniel.architectury.idea.util.EXPECT_PLATFORM
 import me.shedaniel.architectury.idea.util.OLD_EXPECT_PLATFORM
 import me.shedaniel.architectury.idea.util.Platform
 
-object ImplementExpectPlatformFix : LocalQuickFix {
-    override fun getFamilyName(): String = ArchitecturyBundle["inspection.implementExpectPlatform"]
+class ImplementExpectPlatformFix(private val platform: Platform) : LocalQuickFix {
+    override fun getFamilyName(): String = ArchitecturyBundle["inspection.implementExpectPlatform.single", platform]
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
         val method = findMethod(descriptor.psiElement) ?: error("Could not find method from ${descriptor.psiElement}")
         val facade = JavaPsiFacade.getInstance(project)
         val elementFactory = JavaPsiFacade.getElementFactory(project)
 
-        var generatedMethod: PsiMethod? = null
-        val missingPlatforms = ArrayList<String>(2)
+        val implClassName = platform.getImplementationName(method.containingClass!!)
+        val implClass = facade.findClass(implClassName, GlobalSearchScope.projectScope(project)) ?: run {
+            val packageName = implClassName.substringBeforeLast('.')
+            val pkg = facade.findPackage(packageName)
 
-        for (platform in Platform.values()) {
-            if (!platform.isIn(project)) continue
+            if (pkg == null) {
+                val label = JBLabel(ArchitecturyBundle["fix.missingPlatformPackage", packageName])
 
-            val implClassName = platform.getImplementationName(method.containingClass ?: continue)
-            val implClass = facade.findClass(implClassName, GlobalSearchScope.projectScope(project)) ?: run {
-                val packageName = implClassName.substringBeforeLast('.')
-                val pkg = facade.findPackage(packageName)
-
-                if (pkg == null) {
-                    missingPlatforms += packageName
-                    return@run null
-                }
-
-                val dir = pkg.directories.first()
-                JavaDirectoryService.getInstance().createClass(dir, implClassName.substringAfterLast('.'))
-            } ?: continue
-
-            val template = elementFactory.createMethod(method.name, method.returnType)
-
-            // Add the different modifiers. The public modifier is first removed to correct its place.
-            template.modifierList.setModifierProperty(PsiModifier.PUBLIC, false) // remove from list...
-            GenerateMembersUtil.copyAnnotations(method, template, EXPECT_PLATFORM, OLD_EXPECT_PLATFORM)
-            template.modifierList.setModifierProperty(PsiModifier.PUBLIC, true) // ... add to list
-            template.modifierList.setModifierProperty(PsiModifier.STATIC, true)
-
-            val added = GenerateMembersUtil.insert(implClass, template, implClass.methods.lastOrNull(), false)
-
-            if (generatedMethod == null) {
-                generatedMethod = added as? PsiMethod
+                return JBPopupFactory.getInstance()
+                    .createComponentPopupBuilder(label, null)
+                    .createPopup()
+                    .showInBestPositionFor(FileEditorManager.getInstance(project).selectedTextEditor!!)
             }
+
+            val dir = pkg.directories.first()
+            JavaDirectoryService.getInstance().createClass(dir, implClassName.substringAfterLast('.'))
         }
 
-        if (missingPlatforms.isEmpty()) {
-            generatedMethod?.navigate(true)
-        } else {
-            val label = JBLabel(ArchitecturyBundle["fix.missingPlatformPackages", missingPlatforms.joinToString()])
+        val template = elementFactory.createMethod(method.name, method.returnType)
 
-            JBPopupFactory.getInstance()
-                .createComponentPopupBuilder(label, null)
-                .createPopup()
-                .showInBestPositionFor(FileEditorManager.getInstance(project).selectedTextEditor!!)
-        }
+        // Add the different modifiers. The public modifier is first removed to correct its place.
+        template.modifierList.setModifierProperty(PsiModifier.PUBLIC, false) // remove from list...
+        GenerateMembersUtil.copyAnnotations(method, template, EXPECT_PLATFORM, OLD_EXPECT_PLATFORM)
+        template.modifierList.setModifierProperty(PsiModifier.PUBLIC, true) // ... add to list
+        template.modifierList.setModifierProperty(PsiModifier.STATIC, true)
+
+        (GenerateMembersUtil.insert(implClass, template, implClass.methods.lastOrNull(), false) as? PsiMethod)
+            ?.navigate(true)
     }
 
     private tailrec fun findMethod(element: PsiElement): PsiMethod? =
