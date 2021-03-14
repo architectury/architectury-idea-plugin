@@ -51,6 +51,11 @@ class ImplementExpectPlatformFix(private val platforms: List<Platform>) : LocalQ
 
             val template = elementFactory.createMethod(method.name, method.returnType)
 
+            // Copy the parameters to the template
+            for (param in method.parameterList.parameters) {
+                template.parameterList.add(param)
+            }
+
             // Add the different modifiers. The public modifier is first removed to correct its place.
             template.modifierList.setModifierProperty(PsiModifier.PUBLIC, false) // remove from list...
             GenerateMembersUtil.copyAnnotations(method, template, EXPECT_PLATFORM, OLD_EXPECT_PLATFORM)
