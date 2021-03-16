@@ -25,6 +25,8 @@
                          enabledByDefault="true"
                          level="WARNING"
                          implementationClass="me.shedaniel.architectury.idea.inspection.UnimplementedExpectPlatformInspection"/>
+
+        <implicitUsageProvider implementation="me.shedaniel.architectury.idea.insight.ExpectPlatformImplicitUsageProvider"/>
     </extensions>
 
     <actions>
