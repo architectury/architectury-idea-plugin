@@ -6,7 +6,6 @@ import com.intellij.psi.PsiMethod
 import com.intellij.psi.PsiParameter
 import me.shedaniel.architectury.idea.util.commonMethods
 import me.shedaniel.architectury.idea.util.isCommonExpectPlatform
-import me.shedaniel.architectury.idea.util.platformMethods
 
 class ExpectPlatformImplicitUsageProvider : ImplicitUsageProvider {
     override fun isImplicitUsage(element: PsiElement): Boolean {
