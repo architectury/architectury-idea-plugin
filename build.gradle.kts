@@ -13,7 +13,7 @@ repositories {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version = "2020.3.2"
+    version = "2021.1"
     setPlugins("java")
 }
 
