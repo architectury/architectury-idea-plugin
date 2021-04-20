@@ -29,6 +29,13 @@
                          level="WARNING"
                          implementationClass="me.shedaniel.architectury.idea.inspection.UnimplementedExpectPlatformInspection"/>
 
+        <localInspection language="JAVA"
+                         displayName="Unsafe @PlatformOnly call"
+                         groupName="Architectury"
+                         enabledByDefault="true"
+                         level="WARNING"
+                         implementationClass="me.shedaniel.architectury.idea.inspection.UnsafePlatformOnlyCallInspection"/>
+
         <implicitUsageProvider implementation="me.shedaniel.architectury.idea.insight.ExpectPlatformImplicitUsageProvider"/>
     </extensions>
 

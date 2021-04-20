@@ -8,7 +8,7 @@ import org.jetbrains.annotations.PropertyKey
 /**
  * An Architectury target platform.
  *
- * @property id a unique string ID for this platform; these are shared throughout the Architectury toolchain
+ * @property id a unique string ID for this platform from [PlatformIds]
  * @property translationKey a resource bundle key for the display name of this platform
  * @property fallbackPlatforms fallback platforms used for finding `@ExpectPlatform` implementation methods
  */
@@ -17,9 +17,9 @@ enum class Platform(
     @PropertyKey(resourceBundle = BUNDLE) private val translationKey: String,
     val fallbackPlatforms: List<Platform> = emptyList()
 ) {
-    FABRIC("fabric", "platform.fabric"),
-    FORGE("forge", "platform.forge"),
-    QUILT("quilt", "platform.quilt", listOf(FABRIC));
+    FABRIC(PlatformIds.FABRIC, "platform.fabric"),
+    FORGE(PlatformIds.FORGE, "platform.forge"),
+    QUILT(PlatformIds.QUILT, "platform.quilt", listOf(FABRIC));
 
     /**
      * Gets the name of the [clazz]'s implementation version for this platform.
@@ -46,4 +46,8 @@ enum class Platform(
     }
 
     override fun toString() = ArchitecturyBundle[translationKey]
+
+    companion object {
+        fun byId(id: String): Platform = values().first { it.id == id }
+    }
 }

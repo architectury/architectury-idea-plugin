@@ -12,6 +12,7 @@ import com.intellij.psi.search.GlobalSearchScope
 const val EXPECT_PLATFORM = "me.shedaniel.architectury.annotations.ExpectPlatform"
 const val OLD_EXPECT_PLATFORM = "me.shedaniel.architectury.ExpectPlatform"
 const val EXPECT_PLATFORM_TRANSFORMED = "me.shedaniel.architectury.annotations.ExpectPlatform.Transformed"
+const val PLATFORM_ONLY = "me.shedaniel.architectury.annotations.PlatformOnly"
 
 val PsiMethod.isStatic: Boolean
     get() = modifierList.hasModifierProperty(PsiModifier.STATIC)
@@ -90,6 +91,16 @@ val PsiMethod.platformMethodsByPlatform: Map<Platform, List<PsiMethod>>
  */
 val PsiMethod.platformMethods: Collection<PsiMethod>
     get() = platformMethodsByPlatform.flatMap { (_, methods) -> methods }
+
+/**
+ * The platforms for this `@PlatformOnly` method, or null if this method
+ * is not platform-specific.
+ */
+val PsiMethod.platformOnlyPlatforms: Set<String>?
+    get() {
+        val annotation = getAnnotation(PLATFORM_ONLY) ?: return null
+        return Annotations.getStrings(annotation, "value").toSet()
+    }
 
 /**
  * The binary name of this class in dot-dollar format (eg. `a.b.C$D`)
