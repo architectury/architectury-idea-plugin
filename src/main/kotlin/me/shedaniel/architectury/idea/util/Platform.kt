@@ -46,8 +46,4 @@ enum class Platform(
     }
 
     override fun toString() = ArchitecturyBundle[translationKey]
-
-    companion object {
-        fun byId(id: String): Platform = values().first { it.id == id }
-    }
 }
