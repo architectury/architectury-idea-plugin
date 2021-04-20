@@ -109,6 +109,12 @@ fun PsiClass.asSequenceWithInnerClasses(): Sequence<PsiClass> =
     }
 
 /**
+ * Gets a value from this platform map, falling back to the [Platform.fallbackPlatforms] if not specified here.
+ */
+fun <V : Any> Map<Platform, V>.getWithPlatformFallback(platform: Platform): V? =
+    this[platform] ?: platform.fallbackPlatforms.asSequence().mapNotNull { getWithPlatformFallback(it) }.firstOrNull()
+
+/**
  * Gets the searching scope for searching for classes related to the [element].
  * If the element's corresponding module is not null (= an element in this project),
  * uses the project scope. Otherwise uses the all scope.
