@@ -11,5 +11,5 @@ val Module.isCommon: Boolean
     get() {
         val facade = JavaPsiFacade.getInstance(project)
         val scope = GlobalSearchScope.moduleWithLibrariesScope(this)
-        return facade.findClass(EXPECT_PLATFORM, scope) != null || facade.findClass(OLD_EXPECT_PLATFORM, scope) != null
+        return AnnotationType.EXPECT_PLATFORM.any { facade.findClass(it, scope) != null }
     }

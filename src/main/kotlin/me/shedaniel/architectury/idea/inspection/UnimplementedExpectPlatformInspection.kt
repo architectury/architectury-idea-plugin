@@ -5,9 +5,10 @@ import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.JavaElementVisitor
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.PsiMethod
+import me.shedaniel.architectury.idea.util.AnnotationType
 import me.shedaniel.architectury.idea.util.ArchitecturyBundle
 import me.shedaniel.architectury.idea.util.Platform
-import me.shedaniel.architectury.idea.util.findExpectPlatform
+import me.shedaniel.architectury.idea.util.findAnnotation
 import me.shedaniel.architectury.idea.util.getWithPlatformFallback
 import me.shedaniel.architectury.idea.util.isCommonExpectPlatform
 import me.shedaniel.architectury.idea.util.platformMethodsByPlatform
@@ -32,7 +33,7 @@ class UnimplementedExpectPlatformInspection : LocalInspectionTool() {
                         }
 
                         holder.registerProblem(
-                            method.findExpectPlatform() ?: method,
+                            method.findAnnotation(AnnotationType.EXPECT_PLATFORM) ?: method,
                             ArchitecturyBundle["inspection.missingExpectPlatform", method.name, missingPlatforms.joinToString()],
                             *fixes.toTypedArray()
                         )

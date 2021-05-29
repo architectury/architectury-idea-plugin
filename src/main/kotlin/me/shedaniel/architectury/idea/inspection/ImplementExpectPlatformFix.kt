@@ -14,10 +14,8 @@ import com.intellij.psi.PsiMethod
 import com.intellij.psi.PsiModifier
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.ui.components.JBLabel
+import me.shedaniel.architectury.idea.util.AnnotationType
 import me.shedaniel.architectury.idea.util.ArchitecturyBundle
-import me.shedaniel.architectury.idea.util.EXPECT_PLATFORM
-import me.shedaniel.architectury.idea.util.OLD2_EXPECT_PLATFORM
-import me.shedaniel.architectury.idea.util.OLD_EXPECT_PLATFORM
 import me.shedaniel.architectury.idea.util.Platform
 
 class ImplementExpectPlatformFix(private val platforms: List<Platform>) : LocalQuickFix {
@@ -59,7 +57,7 @@ class ImplementExpectPlatformFix(private val platforms: List<Platform>) : LocalQ
 
             // Add the different modifiers. The public modifier is first removed to correct its place.
             template.modifierList.setModifierProperty(PsiModifier.PUBLIC, false) // remove from list...
-            GenerateMembersUtil.copyAnnotations(method, template, EXPECT_PLATFORM, OLD_EXPECT_PLATFORM, OLD2_EXPECT_PLATFORM)
+            GenerateMembersUtil.copyAnnotations(method, template, *AnnotationType.EXPECT_PLATFORM.toTypedArray())
             template.modifierList.setModifierProperty(PsiModifier.PUBLIC, true) // ... add to list
             template.modifierList.setModifierProperty(PsiModifier.STATIC, true)
 

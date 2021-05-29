@@ -7,33 +7,29 @@ import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.PsiModifier
+import com.intellij.psi.PsiModifierListOwner
 import com.intellij.psi.search.GlobalSearchScope
-
-const val EXPECT_PLATFORM = "dev.architectury.injectables.annotations.ExpectPlatform"
-const val OLD_EXPECT_PLATFORM = "me.shedaniel.architectury.ExpectPlatform"
-const val OLD2_EXPECT_PLATFORM = "me.shedaniel.architectury.annotations.ExpectPlatform"
-const val EXPECT_PLATFORM_TRANSFORMED = "dev.architectury.injectables.annotations.ExpectPlatform.Transformed"
-const val OLD_EXPECT_PLATFORM_TRANSFORMED = "me.shedaniel.architectury.annotations.ExpectPlatform.Transformed"
-const val PLATFORM_ONLY = "me.shedaniel.architectury.annotations.PlatformOnly"
 
 val PsiMethod.isStatic: Boolean
     get() = modifierList.hasModifierProperty(PsiModifier.STATIC)
+
+fun PsiModifierListOwner.hasAnnotation(type: AnnotationType): Boolean =
+    type.any { hasAnnotation(it) }
 
 /**
  * True if this method is a common, untransformed `@ExpectPlatform` method.
  */
 val PsiMethod.isCommonExpectPlatform: Boolean
     get() = isStatic &&
-        (hasAnnotation(EXPECT_PLATFORM) || hasAnnotation(OLD_EXPECT_PLATFORM) || hasAnnotation(OLD2_EXPECT_PLATFORM)) &&
-        !hasAnnotation(EXPECT_PLATFORM_TRANSFORMED) && !hasAnnotation(OLD_EXPECT_PLATFORM_TRANSFORMED)
+        hasAnnotation(AnnotationType.EXPECT_PLATFORM) &&
+        !hasAnnotation(AnnotationType.TRANSFORMED_EXPECT_PLATFORM)
 
 /**
- * Finds the `@ExpectPlatform` annotation of this method.
+ * Finds the first annotation of the [type] on this method.
  */
-fun PsiMethod.findExpectPlatform(): PsiAnnotation? =
+fun PsiMethod.findAnnotation(type: AnnotationType): PsiAnnotation? =
     annotations.firstOrNull {
-        it.hasQualifiedName(EXPECT_PLATFORM) || it.hasQualifiedName(OLD_EXPECT_PLATFORM) ||
-            it.hasQualifiedName(OLD2_EXPECT_PLATFORM)
+        type.any { name -> it.hasQualifiedName(name) }
     }
 
 // TODO: Cache these somehow? Both commonMethods and platformMethods might be really slow and could benefit from caching.
@@ -103,7 +99,7 @@ val PsiMethod.platformMethods: Collection<PsiMethod>
  */
 val PsiMethod.platformOnlyPlatforms: Set<String>?
     get() {
-        val annotation = getAnnotation(PLATFORM_ONLY) ?: return null
+        val annotation = findAnnotation(AnnotationType.PLATFORM_ONLY) ?: return null
         return Annotations.getStrings(annotation, "value").toSet()
     }
 
