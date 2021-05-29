@@ -31,8 +31,10 @@ val PsiMethod.isCommonExpectPlatform: Boolean
  * Finds the `@ExpectPlatform` annotation of this method.
  */
 fun PsiMethod.findExpectPlatform(): PsiAnnotation? =
-    annotations.firstOrNull { it.hasQualifiedName(EXPECT_PLATFORM) || it.hasQualifiedName(OLD_EXPECT_PLATFORM)
-        || it.hasQualifiedName(OLD2_EXPECT_PLATFORM)}
+    annotations.firstOrNull {
+        it.hasQualifiedName(EXPECT_PLATFORM) || it.hasQualifiedName(OLD_EXPECT_PLATFORM) ||
+            it.hasQualifiedName(OLD2_EXPECT_PLATFORM)
+    }
 
 // TODO: Cache these somehow? Both commonMethods and platformMethods might be really slow and could benefit from caching.
 
