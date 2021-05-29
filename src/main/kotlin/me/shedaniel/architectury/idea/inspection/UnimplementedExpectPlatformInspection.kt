@@ -8,6 +8,7 @@ import com.intellij.psi.PsiMethod
 import me.shedaniel.architectury.idea.util.ArchitecturyBundle
 import me.shedaniel.architectury.idea.util.Platform
 import me.shedaniel.architectury.idea.util.findExpectPlatform
+import me.shedaniel.architectury.idea.util.getWithPlatformFallback
 import me.shedaniel.architectury.idea.util.isCommonExpectPlatform
 import me.shedaniel.architectury.idea.util.platformMethodsByPlatform
 
@@ -20,7 +21,7 @@ class UnimplementedExpectPlatformInspection : LocalInspectionTool() {
                     val missingPlatforms = Platform.values().filter { platform ->
                         if (!platform.isIn(method.project)) return@filter false
 
-                        val methods = allPlatformMethods[platform]
+                        val methods = allPlatformMethods.getWithPlatformFallback(platform)
                         methods == null || methods.isEmpty()
                     }
 

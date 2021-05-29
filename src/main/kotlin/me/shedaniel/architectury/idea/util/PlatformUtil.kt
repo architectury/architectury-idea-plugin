@@ -14,6 +14,7 @@ const val OLD_EXPECT_PLATFORM = "me.shedaniel.architectury.ExpectPlatform"
 const val OLD2_EXPECT_PLATFORM = "me.shedaniel.architectury.annotations.ExpectPlatform"
 const val EXPECT_PLATFORM_TRANSFORMED = "dev.architectury.injectables.annotations.ExpectPlatform.Transformed"
 const val OLD_EXPECT_PLATFORM_TRANSFORMED = "me.shedaniel.architectury.annotations.ExpectPlatform.Transformed"
+const val PLATFORM_ONLY = "me.shedaniel.architectury.annotations.PlatformOnly"
 
 val PsiMethod.isStatic: Boolean
     get() = modifierList.hasModifierProperty(PsiModifier.STATIC)
@@ -95,6 +96,16 @@ val PsiMethod.platformMethods: Collection<PsiMethod>
     get() = platformMethodsByPlatform.flatMap { (_, methods) -> methods }
 
 /**
+ * The platforms for this `@PlatformOnly` method, or null if this method
+ * is not platform-specific.
+ */
+val PsiMethod.platformOnlyPlatforms: Set<String>?
+    get() {
+        val annotation = getAnnotation(PLATFORM_ONLY) ?: return null
+        return Annotations.getStrings(annotation, "value").toSet()
+    }
+
+/**
  * The binary name of this class in dot-dollar format (eg. `a.b.C$D`)
  */
 val PsiClass.binaryName: String?
@@ -110,6 +121,12 @@ fun PsiClass.asSequenceWithInnerClasses(): Sequence<PsiClass> =
         yield(this@asSequenceWithInnerClasses)
         yieldAll(innerClasses.asSequence().flatMap { it.asSequenceWithInnerClasses() })
     }
+
+/**
+ * Gets a value from this platform map, falling back to the [Platform.fallbackPlatforms] if not specified here.
+ */
+fun <V : Any> Map<Platform, V>.getWithPlatformFallback(platform: Platform): V? =
+    this[platform] ?: platform.fallbackPlatforms.asSequence().mapNotNull { getWithPlatformFallback(it) }.firstOrNull()
 
 /**
  * Gets the searching scope for searching for classes related to the [element].

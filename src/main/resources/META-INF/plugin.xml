@@ -8,7 +8,10 @@
     ]]></description>
 
     <change-notes><![CDATA[
-    Initial release.
+    <ul>
+    <li>Added implicit usage of ExpectPlatform impls (PR #2 by theglitch76)</li>
+    <li>Updated to IDEA 2021.1</li>
+    </ul>
     ]]></change-notes>
 
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
@@ -25,6 +28,13 @@
                          enabledByDefault="true"
                          level="WARNING"
                          implementationClass="me.shedaniel.architectury.idea.inspection.UnimplementedExpectPlatformInspection"/>
+
+        <localInspection language="JAVA"
+                         displayName="Unsafe @PlatformOnly call"
+                         groupName="Architectury"
+                         enabledByDefault="true"
+                         level="WARNING"
+                         implementationClass="me.shedaniel.architectury.idea.inspection.UnsafePlatformOnlyCallInspection"/>
 
         <implicitUsageProvider implementation="me.shedaniel.architectury.idea.insight.ExpectPlatformImplicitUsageProvider"/>
     </extensions>
