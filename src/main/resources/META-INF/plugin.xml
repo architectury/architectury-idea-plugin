@@ -9,8 +9,8 @@
 
     <change-notes><![CDATA[
     <ul>
-    <li>Added implicit usage of ExpectPlatform impls (PR #2 by theglitch76)</li>
-    <li>Updated to IDEA 2021.1</li>
+    <li>Added support for Architectury's new package</li>
+    <li>Added inspection for unsafe PlatformOnly calls</li>
     </ul>
     ]]></change-notes>
 
