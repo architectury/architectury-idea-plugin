@@ -11,15 +11,18 @@ import org.jetbrains.annotations.PropertyKey
  * @property id a unique string ID for this platform from [PlatformIds]
  * @property translationKey a resource bundle key for the display name of this platform
  * @property fallbackPlatforms fallback platforms used for finding `@ExpectPlatform` implementation methods
+ * @property identifyingPackage a package that is only present when a module is on this platform
  */
 enum class Platform(
     val id: String,
     @PropertyKey(resourceBundle = BUNDLE) private val translationKey: String,
+    private val identifyingPackage: String,
     val fallbackPlatforms: List<Platform> = emptyList()
 ) {
-    FABRIC(PlatformIds.FABRIC, "platform.fabric"),
-    FORGE(PlatformIds.FORGE, "platform.forge"),
-    QUILT(PlatformIds.QUILT, "platform.quilt", listOf(FABRIC));
+    FABRIC(PlatformIds.FABRIC, "platform.fabric", "net.fabricmc.api"),
+    FORGE(PlatformIds.FORGE, "platform.forge", "net.minecraftforge"),
+    // QUILT(PlatformIds.QUILT, "platform.quilt", "org.quiltmc", listOf(FABRIC)),
+    ;
 
     /**
      * Gets the name of the [clazz]'s implementation version for this platform.
@@ -34,16 +37,8 @@ enum class Platform(
         return "$head.$id.${tail}Impl"
     }
 
-    fun isIn(project: Project): Boolean {
-        val facade = JavaPsiFacade.getInstance(project)
-        fun hasPackage(pkg: String): Boolean = facade.findPackage(pkg) != null
-
-        return when (this) {
-            FORGE -> hasPackage("net.minecraftforge")
-            FABRIC -> hasPackage("net.fabricmc.api")
-            QUILT -> hasPackage("org.quiltmc")
-        }
-    }
+    fun isIn(project: Project): Boolean =
+        JavaPsiFacade.getInstance(project).findPackage(identifyingPackage) != null
 
     override fun toString() = ArchitecturyBundle[translationKey]
 }
