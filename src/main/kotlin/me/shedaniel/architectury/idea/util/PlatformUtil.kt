@@ -9,9 +9,11 @@ import com.intellij.psi.PsiMethod
 import com.intellij.psi.PsiModifier
 import com.intellij.psi.search.GlobalSearchScope
 
-const val EXPECT_PLATFORM = "me.shedaniel.architectury.annotations.ExpectPlatform"
+const val EXPECT_PLATFORM = "dev.architectury.injectables.annotations.ExpectPlatform"
 const val OLD_EXPECT_PLATFORM = "me.shedaniel.architectury.ExpectPlatform"
-const val EXPECT_PLATFORM_TRANSFORMED = "me.shedaniel.architectury.annotations.ExpectPlatform.Transformed"
+const val OLD2_EXPECT_PLATFORM = "me.shedaniel.architectury.annotations.ExpectPlatform"
+const val EXPECT_PLATFORM_TRANSFORMED = "dev.architectury.injectables.annotations.ExpectPlatform.Transformed"
+const val OLD_EXPECT_PLATFORM_TRANSFORMED = "me.shedaniel.architectury.annotations.ExpectPlatform.Transformed"
 
 val PsiMethod.isStatic: Boolean
     get() = modifierList.hasModifierProperty(PsiModifier.STATIC)
@@ -21,14 +23,15 @@ val PsiMethod.isStatic: Boolean
  */
 val PsiMethod.isCommonExpectPlatform: Boolean
     get() = isStatic &&
-        (hasAnnotation(EXPECT_PLATFORM) || hasAnnotation(OLD_EXPECT_PLATFORM)) &&
-        !hasAnnotation(EXPECT_PLATFORM_TRANSFORMED)
+        (hasAnnotation(EXPECT_PLATFORM) || hasAnnotation(OLD_EXPECT_PLATFORM) || hasAnnotation(OLD2_EXPECT_PLATFORM)) &&
+        !hasAnnotation(EXPECT_PLATFORM_TRANSFORMED) && !hasAnnotation(OLD_EXPECT_PLATFORM_TRANSFORMED)
 
 /**
  * Finds the `@ExpectPlatform` annotation of this method.
  */
 fun PsiMethod.findExpectPlatform(): PsiAnnotation? =
-    annotations.firstOrNull { it.hasQualifiedName(EXPECT_PLATFORM) || it.hasQualifiedName(OLD_EXPECT_PLATFORM) }
+    annotations.firstOrNull { it.hasQualifiedName(EXPECT_PLATFORM) || it.hasQualifiedName(OLD_EXPECT_PLATFORM)
+        || it.hasQualifiedName(OLD2_EXPECT_PLATFORM)}
 
 // TODO: Cache these somehow? Both commonMethods and platformMethods might be really slow and could benefit from caching.
 
