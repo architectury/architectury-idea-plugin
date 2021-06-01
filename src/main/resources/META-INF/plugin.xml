@@ -17,10 +17,13 @@
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
     <depends>com.intellij.modules.java</depends>
+    <depends>org.jetbrains.kotlin</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <codeInsight.lineMarkerProvider language="JAVA" implementationClass="me.shedaniel.architectury.idea.gutter.CommonMethodLineMarkerProvider"/>
         <codeInsight.lineMarkerProvider language="JAVA" implementationClass="me.shedaniel.architectury.idea.gutter.PlatformMethodLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language="kotlin" implementationClass="me.shedaniel.architectury.idea.kotlin.gutter.CommonFunctionLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language="kotlin" implementationClass="me.shedaniel.architectury.idea.kotlin.gutter.PlatformFunctionLineMarkerProvider"/>
 
         <localInspection language="JAVA"
                          displayName="Unimplemented @ExpectPlatform method"
