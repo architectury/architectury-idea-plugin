@@ -37,17 +37,17 @@ fun PsiMethod.findAnnotation(type: AnnotationType): PsiAnnotation? =
 /**
  * The common declarations corresponding to this platform method.
  */
-val PsiMethod.commonMethods: List<PsiMethod>
+val PsiMethod.commonMethods: Set<PsiMethod>
     get() {
         // no common methods for non-statics
-        if (!isStatic) return emptyList()
+        if (!isStatic) return emptySet()
 
-        val clazz = containingClass ?: return emptyList()
-        val name = clazz.binaryName ?: return emptyList()
+        val clazz = containingClass ?: return emptySet()
+        val name = clazz.binaryName ?: return emptySet()
         val pkg = name.substringBeforeLast('.')
 
         val nameMatches = name.endsWith("Impl") && Platform.values().any { pkg.endsWith(".${it.id}") }
-        if (!nameMatches) return emptyList()
+        if (!nameMatches) return emptySet()
 
         val commonPkg = pkg.substringBeforeLast('.')
         val commonClassName = name.substringAfterLast('.').removeSuffix("Impl")
@@ -62,14 +62,14 @@ val PsiMethod.commonMethods: List<PsiMethod>
                 it.findMethodBySignature(this, false)
             }
             ?.filter { it.isCommonExpectPlatform }
-            ?.toList()
-            ?: emptyList()
+            ?.toSet()
+            ?: emptySet()
     }
 
 /**
  * The platform implementations of this common method.
  */
-val PsiMethod.platformMethodsByPlatform: Map<Platform, List<PsiMethod>>
+val PsiMethod.platformMethodsByPlatform: Map<Platform, Set<PsiMethod>>
     get() {
         if (!isCommonExpectPlatform) return emptyMap()
         val clazz = containingClass ?: return emptyMap()
@@ -83,15 +83,15 @@ val PsiMethod.platformMethodsByPlatform: Map<Platform, List<PsiMethod>>
                 .mapNotNull { clazz ->
                     clazz.findMethodBySignature(this, false)
                 }
-                .toList()
+                .toSet()
         }
     }
 
 /**
  * The platform implementations of this common method.
  */
-val PsiMethod.platformMethods: Collection<PsiMethod>
-    get() = platformMethodsByPlatform.flatMap { (_, methods) -> methods }
+val PsiMethod.platformMethods: Set<PsiMethod>
+    get() = platformMethodsByPlatform.flatMap { (_, methods) -> methods }.toSet()
 
 /**
  * The platforms for this `@PlatformOnly` method, or null if this method

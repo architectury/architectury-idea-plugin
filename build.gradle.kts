@@ -16,7 +16,7 @@ repositories {
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
     version = "2021.1"
-    setPlugins("java")
+    setPlugins("java", "Kotlin")
 }
 
 tasks {
