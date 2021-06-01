@@ -9,6 +9,7 @@ import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.pom.Navigatable
 import com.intellij.psi.JavaDirectoryService
 import com.intellij.psi.JavaPsiFacade
+import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.PsiModifier
@@ -44,7 +45,7 @@ class ImplementExpectPlatformFix(private val platforms: List<Platform>) : LocalQ
                     return@run null
                 }
 
-                val dir = pkg.directories.first()
+                val dir = findJavaSourceDirectory(pkg.directories)
                 JavaDirectoryService.getInstance().createClass(dir, implClassName.substringAfterLast('.'))
             } ?: continue
 
@@ -85,4 +86,30 @@ class ImplementExpectPlatformFix(private val platforms: List<Platform>) : LocalQ
             element.parent != null -> findMethod(element.parent)
             else -> null
         }
+
+    /**
+     * Finds the most Java-looking source directory in [directories].
+     *
+     * - `src/main/java` is matched first
+     * - any `java` is matched second
+     * - if none of the above, the first element of the array
+     */
+    private fun findJavaSourceDirectory(directories: Array<out PsiDirectory>): PsiDirectory {
+        if (directories.size == 1) return directories.single()
+
+        val srcMainJava = directories.firstOrNull {
+            val path = it.virtualFile.toNioPath().toAbsolutePath()
+            "src/main/java" in path.toString().replace(path.fileSystem.separator, "/")
+        }
+
+        if (srcMainJava != null) return srcMainJava
+
+        val anyJava = directories.firstOrNull {
+            "java" in it.virtualFile.toNioPath().toAbsolutePath().toString()
+        }
+
+        if (anyJava != null) return anyJava
+
+        return directories.first()
+    }
 }
