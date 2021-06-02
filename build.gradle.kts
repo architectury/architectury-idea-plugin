@@ -16,7 +16,7 @@ repositories {
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
     version.set("212-EAP-SNAPSHOT")
-    plugins.set("java, Kotlin".split(',').map(String::trim))
+    plugins.set(listOf("java", "Kotlin"))
 }
 
 tasks {
