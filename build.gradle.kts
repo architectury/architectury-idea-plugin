@@ -17,6 +17,7 @@ repositories {
 intellij {
     version.set("212-EAP-SNAPSHOT")
     plugins.set(listOf("java", "Kotlin"))
+    updateSinceUntilBuild.set(true)
 }
 
 tasks {
@@ -26,5 +27,10 @@ tasks {
 
     withType<KotlinCompile> {
         kotlinOptions.jvmTarget = "1.8"
+    }
+
+    patchPluginXml {
+        sinceBuild.set("211")
+        untilBuild.set("212.*")
     }
 }
