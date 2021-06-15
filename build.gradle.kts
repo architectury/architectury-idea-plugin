@@ -15,7 +15,7 @@ repositories {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version.set("212-EAP-SNAPSHOT")
+    version.set("2021.1")
     plugins.set(listOf("java", "Kotlin"))
     updateSinceUntilBuild.set(true)
 }
