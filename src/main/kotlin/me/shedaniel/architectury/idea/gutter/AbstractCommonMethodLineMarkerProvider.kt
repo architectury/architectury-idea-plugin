@@ -1,12 +1,12 @@
 package me.shedaniel.architectury.idea.gutter
 
 import com.intellij.icons.AllIcons
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiMethod
-import com.intellij.psi.PsiNameIdentifierOwner
 import me.shedaniel.architectury.idea.util.platformMethods
 import javax.swing.Icon
 
-abstract class AbstractCommonMethodLineMarkerProvider<M : PsiNameIdentifierOwner> :
+abstract class AbstractCommonMethodLineMarkerProvider<M : PsiElement> :
     RelatedMethodLineMarkerProvider<M>() {
     override val tooltipTranslationKey = "architectury.gutter.goToPlatform"
     override val navTitleTranslationKey = "architectury.gutter.chooseImpl"

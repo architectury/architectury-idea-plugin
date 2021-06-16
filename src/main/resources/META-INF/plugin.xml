@@ -24,6 +24,8 @@
         <codeInsight.lineMarkerProvider language="JAVA" implementationClass="me.shedaniel.architectury.idea.gutter.PlatformMethodLineMarkerProvider"/>
         <codeInsight.lineMarkerProvider language="kotlin" implementationClass="me.shedaniel.architectury.idea.kotlin.gutter.CommonFunctionLineMarkerProvider"/>
         <codeInsight.lineMarkerProvider language="kotlin" implementationClass="me.shedaniel.architectury.idea.kotlin.gutter.PlatformFunctionLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language="kotlin" implementationClass="me.shedaniel.architectury.idea.kotlin.gutter.CommonPropertyLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language="kotlin" implementationClass="me.shedaniel.architectury.idea.kotlin.gutter.PlatformPropertyLineMarkerProvider"/>
 
         <localInspection language="JAVA"
                          displayName="Unimplemented @ExpectPlatform method"

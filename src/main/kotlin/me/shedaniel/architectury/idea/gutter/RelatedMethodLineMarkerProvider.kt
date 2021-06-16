@@ -7,13 +7,12 @@ import com.intellij.codeInsight.daemon.LineMarkerProviderDescriptor
 import com.intellij.openapi.editor.markup.GutterIconRenderer
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiMethod
-import com.intellij.psi.PsiNameIdentifierOwner
 import com.intellij.psi.util.PsiTreeUtil
 import me.shedaniel.architectury.idea.util.ArchitecturyBundle
 import java.awt.event.MouseEvent
 import javax.swing.Icon
 
-abstract class RelatedMethodLineMarkerProvider<M : PsiNameIdentifierOwner> :
+abstract class RelatedMethodLineMarkerProvider<M : PsiElement> :
     LineMarkerProviderDescriptor(), GutterIconNavigationHandler<PsiElement> {
     protected abstract val tooltipTranslationKey: String
     protected abstract val navTitleTranslationKey: String
@@ -28,9 +27,10 @@ abstract class RelatedMethodLineMarkerProvider<M : PsiNameIdentifierOwner> :
         fun M.relatedMethods() = converter.toPsiMethod(this)?.relatedMethods ?: emptySet()
 
         if (converter.type.isInstance(element) && (element as M).relatedMethods().isNotEmpty()) {
+            val leaf = converter.getPreferredLeafElement(element)
             return LineMarkerInfo(
-                element.nameIdentifier!!,
-                element.nameIdentifier!!.textRange,
+                leaf,
+                leaf.textRange,
                 icon,
                 { ArchitecturyBundle[tooltipTranslationKey] },
                 this,
@@ -47,9 +47,10 @@ abstract class RelatedMethodLineMarkerProvider<M : PsiNameIdentifierOwner> :
         val related = converter.toPsiMethod(method)?.relatedMethods ?: return
 
         if (related.isNotEmpty()) {
+            val name = converter.toNameIdentifierOwner(method).name
             DefaultGutterIconNavigationHandler<PsiElement>(
                 related,
-                "<html>" + ArchitecturyBundle[navTitleTranslationKey, "<b>${method.name}</b>", related.size]
+                "<html>" + ArchitecturyBundle[navTitleTranslationKey, "<b>$name</b>", related.size]
             ).navigate(e, elt)
         }
     }
