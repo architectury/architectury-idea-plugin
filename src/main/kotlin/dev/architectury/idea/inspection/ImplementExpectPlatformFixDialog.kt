@@ -56,9 +56,11 @@ class ImplementExpectPlatformFixDialog(
         val label = JLabel(RefactoringBundle.message("target.destination.folder"))
         label.labelFor = destinationBox
         return FormBuilder.createFormBuilder()
-            .addComponent(JBLabelDecorator.createJBLabelDecorator().setBold(true).apply {
-                text = title
-            })
+            .addComponent(
+                JBLabelDecorator.createJBLabelDecorator().setBold(true).apply {
+                    text = title
+                }
+            )
             .addLabeledComponent(label, destinationBox, UIUtil.LARGE_VGAP)
             .panel
     }
@@ -69,19 +71,23 @@ class ImplementExpectPlatformFixDialog(
         }
 
         close(OK_EXIT_CODE, /* isOk = */ true)
-        CommandProcessor.getInstance().executeCommand(project, {
-            val direction = resolveFile(
-                project,
-                (destinationBox.comboBox.selectedItem as DirectoryChooser.ItemWrapper).directory,
-                packageName,
-            )
+        CommandProcessor.getInstance().executeCommand(
+            project,
+            {
+                val direction = resolveFile(
+                    project,
+                    (destinationBox.comboBox.selectedItem as DirectoryChooser.ItemWrapper).directory,
+                    packageName,
+                )
 
-            val className = platform.getImplementationName(method.containingClass!!)
-            val clazz = JavaDirectoryService.getInstance().getClasses(direction)
-                .firstOrNull { it.name == className.substringAfterLast('.') }
-                ?: JavaDirectoryService.getInstance().createClass(direction, className.substringAfterLast('.'))
-            ImplementExpectPlatformFix.addMethod(project, method, clazz)
-        }, title, null)
+                val className = platform.getImplementationName(method.containingClass!!)
+                val clazz = JavaDirectoryService.getInstance().getClasses(direction)
+                    .firstOrNull { it.name == className.substringAfterLast('.') }
+                    ?: JavaDirectoryService.getInstance().createClass(direction, className.substringAfterLast('.'))
+                ImplementExpectPlatformFix.addMethod(project, method, clazz)
+            },
+            title, null
+        )
     }
 
     companion object {
