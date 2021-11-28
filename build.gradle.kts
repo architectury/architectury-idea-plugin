@@ -6,8 +6,8 @@ plugins {
     id("org.jmailen.kotlinter") version "3.4.4"
 }
 
-group = "me.shedaniel"
-version = "1.4.0"
+group = "dev.architectury"
+version = "1.5.0"
 
 repositories {
     mavenCentral()
