@@ -3,21 +3,25 @@ package me.shedaniel.architectury.idea.inspection
 import com.intellij.codeInsight.generation.GenerateMembersUtil
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
-import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.module.Module
+import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.popup.JBPopupFactory
+import com.intellij.openapi.roots.JavaProjectRootsUtil
+import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.pom.Navigatable
 import com.intellij.psi.JavaDirectoryService
 import com.intellij.psi.JavaPsiFacade
+import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiManager
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.PsiModifier
 import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.ui.components.JBLabel
 import me.shedaniel.architectury.idea.util.AnnotationType
 import me.shedaniel.architectury.idea.util.ArchitecturyBundle
 import me.shedaniel.architectury.idea.util.Platform
+import org.jetbrains.jps.model.java.JavaSourceRootType
 
 class ImplementExpectPlatformFix(private val platforms: List<Platform>) : LocalQuickFix {
     override fun getFamilyName(): String {
@@ -30,9 +34,7 @@ class ImplementExpectPlatformFix(private val platforms: List<Platform>) : LocalQ
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
         val method = findMethod(descriptor.psiElement) ?: error("Could not find method from ${descriptor.psiElement}")
         val facade = JavaPsiFacade.getInstance(project)
-        val elementFactory = JavaPsiFacade.getElementFactory(project)
-        val missingPackages = ArrayList<String>()
-        var navigationTarget: Navigatable? = null
+        val missingPackages = HashMap<Platform, String>()
 
         for (platform in platforms) {
             val implClassName = platform.getImplementationName(method.containingClass!!)
@@ -41,7 +43,7 @@ class ImplementExpectPlatformFix(private val platforms: List<Platform>) : LocalQ
                 val pkg = facade.findPackage(packageName)
 
                 if (pkg == null) {
-                    missingPackages += packageName
+                    missingPackages[platform] = packageName
                     return@run null
                 }
 
@@ -49,6 +51,49 @@ class ImplementExpectPlatformFix(private val platforms: List<Platform>) : LocalQ
                 JavaDirectoryService.getInstance().createClass(dir, implClassName.substringAfterLast('.'))
             } ?: continue
 
+            addMethod(project, method, implClass)
+        }
+
+        missingPackages.forEach { (platform, packageName) ->
+            var directory: PsiDirectory? = null
+            val modules = ModuleManager.getInstance(project).modules.asSequence()
+                .distinctBy { it.name }
+                .toList()
+
+            fun handleModule(module: Module, test: Boolean): Boolean {
+                if (module.name.substringBeforeLast(".").endsWith(".${platform.name}", ignoreCase = true)) {
+                    val dir = ModuleRootManager.getInstance(module).contentEntries.asSequence()
+                        .flatMap { it.getSourceFolders(if (test) JavaSourceRootType.TEST_SOURCE else JavaSourceRootType.SOURCE) }
+                        .filter { !JavaProjectRootsUtil.isForGeneratedSources(it) }
+                        .mapNotNull { it.file }
+                        .firstOrNull()
+                    if (dir != null) {
+                        directory = PsiManager.getInstance(project).findDirectory(dir)
+                        return true
+                    }
+                }
+
+                return false
+            }
+
+            for (module in modules) {
+                if (handleModule(module, false)) break
+            }
+
+            if (directory == null) {
+                for (module in modules) {
+                    if (handleModule(module, true)) break
+                }
+            }
+
+            val dialog = ImplementExpectPlatformFixDialog(project, platform, packageName, method, directory)
+            dialog.show()
+        }
+    }
+
+    companion object {
+        fun addMethod(project: Project, method: PsiMethod, clazz: PsiClass) {
+            val elementFactory = JavaPsiFacade.getElementFactory(project)
             val template = elementFactory.createMethod(method.name, method.returnType)
 
             // Copy the parameters to the template
@@ -62,21 +107,8 @@ class ImplementExpectPlatformFix(private val platforms: List<Platform>) : LocalQ
             template.modifierList.setModifierProperty(PsiModifier.PUBLIC, true) // ... add to list
             template.modifierList.setModifierProperty(PsiModifier.STATIC, true)
 
-            val inserted = GenerateMembersUtil.insert(implClass, template, implClass.methods.lastOrNull(), false)
-            if (navigationTarget == null) {
-                navigationTarget = inserted as? Navigatable
-            }
-        }
-
-        if (missingPackages.isEmpty()) {
-            navigationTarget?.navigate(true)
-        } else {
-            val label = JBLabel(ArchitecturyBundle["fix.missingPlatformPackages", missingPackages.joinToString()])
-
-            JBPopupFactory.getInstance()
-                .createComponentPopupBuilder(label, null)
-                .createPopup()
-                .showInBestPositionFor(FileEditorManager.getInstance(project).selectedTextEditor!!)
+            val inserted = GenerateMembersUtil.insert(clazz, template, clazz.methods.lastOrNull(), false)
+            (inserted as? Navigatable)?.navigate(true)
         }
     }
 
