@@ -17,6 +17,7 @@ import com.intellij.util.ui.FormBuilder
 import com.intellij.util.ui.UIUtil
 import dev.architectury.idea.util.ArchitecturyBundle
 import dev.architectury.idea.util.Platform
+import javax.swing.JComboBox
 import javax.swing.JComponent
 import javax.swing.JLabel
 
@@ -40,15 +41,17 @@ class ImplementExpectPlatformFixDialog(
     init {
         title = ArchitecturyBundle["inspection.implementExpectPlatform.single", platform]
         init()
-        destinationBox.setData(project, defaultDirectory, EditorComboBox(""))
-        destinationBox.comboBox.addItemListener {
-            isOKActionEnabled = (it.item as? DirectoryChooser.ItemWrapper)?.directory != null
+        val comboBox = EditorComboBox("").also { ecb ->
+            ecb.addItemListener {
+                isOKActionEnabled = (it.item as? DirectoryChooser.ItemWrapper)?.directory != null
+            }
         }
+        destinationBox.setData(project, defaultDirectory, comboBox)
     }
 
     override fun createActions() = arrayOf(okAction, cancelAction)
 
-    override fun getPreferredFocusedComponent() = destinationBox.childComponent
+    override fun getPreferredFocusedComponent(): JComboBox<Any> = destinationBox.childComponent
 
     override fun createCenterPanel(): JComponent? = null
 
@@ -76,7 +79,7 @@ class ImplementExpectPlatformFixDialog(
             {
                 val direction = resolveFile(
                     project,
-                    (destinationBox.comboBox.selectedItem as DirectoryChooser.ItemWrapper).directory,
+                    (destinationBox.childComponent.selectedItem as DirectoryChooser.ItemWrapper).directory,
                     packageName,
                 )
 
