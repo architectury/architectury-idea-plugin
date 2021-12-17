@@ -41,10 +41,9 @@ class ImplementExpectPlatformFixDialog(
     init {
         title = ArchitecturyBundle["inspection.implementExpectPlatform.single", platform]
         init()
-        val comboBox = EditorComboBox("").also { ecb ->
-            ecb.addItemListener {
-                isOKActionEnabled = (it.item as? DirectoryChooser.ItemWrapper)?.directory != null
-            }
+        val comboBox = EditorComboBox("")
+        comboBox.addItemListener {
+            isOKActionEnabled = (it.item as? DirectoryChooser.ItemWrapper)?.directory != null
         }
         destinationBox.setData(project, defaultDirectory, comboBox)
     }
