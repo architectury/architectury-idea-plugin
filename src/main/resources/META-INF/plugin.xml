@@ -9,7 +9,7 @@
 
     <change-notes><![CDATA[
     <ul>
-    <li>Added dialogs to select the source root for implementing <code>@ExpectPlatform</code></li>
+    <li>Migrated to IDEA 2021.3</li>
     </ul>
     ]]></change-notes>
 
