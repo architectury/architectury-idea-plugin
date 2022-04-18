@@ -1,13 +1,14 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.jetbrains.intellij") version "1.3.0"
-    kotlin("jvm") version "1.5.10" // Corresponds to IDEA 2021.3, see kt jars inside the ideaIC dep in IDEA
+    id("org.jetbrains.intellij") version "1.5.3"
+    // Corresponds to IDEA 2022.1, see KotlinVersion class in ideaIC/3rd-party-rt.jar
+    kotlin("jvm") version "1.6.10"
     id("org.jmailen.kotlinter") version "3.6.0"
 }
 
 group = "dev.architectury"
-version = "1.6.0"
+version = "1.6.1"
 
 repositories {
     mavenCentral()
@@ -15,7 +16,7 @@ repositories {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version.set("2021.3")
+    version.set("2022.1")
     plugins.set(listOf("java", "Kotlin"))
 }
 
@@ -29,7 +30,7 @@ tasks {
     }
 
     patchPluginXml {
-        sinceBuild.set("213")
-        untilBuild.set("213.*")
+        sinceBuild.set("221")
+        untilBuild.set("221.*")
     }
 }

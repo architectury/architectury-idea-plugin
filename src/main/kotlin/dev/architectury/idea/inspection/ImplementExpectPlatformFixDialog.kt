@@ -1,7 +1,9 @@
 package dev.architectury.idea.inspection
 
 import com.intellij.ide.util.DirectoryChooser
+import com.intellij.ide.util.PackageUtil
 import com.intellij.openapi.command.CommandProcessor
+import com.intellij.openapi.module.ModuleUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.ui.DialogWrapper
@@ -9,6 +11,8 @@ import com.intellij.psi.JavaDirectoryService
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiManager
 import com.intellij.psi.PsiMethod
+import com.intellij.refactoring.MoveDestination
+import com.intellij.refactoring.PackageWrapper
 import com.intellij.refactoring.RefactoringBundle
 import com.intellij.refactoring.move.moveClassesOrPackages.DestinationFolderComboBox
 import com.intellij.ui.EditorComboBox
@@ -76,9 +80,11 @@ class ImplementExpectPlatformFixDialog(
         CommandProcessor.getInstance().executeCommand(
             project,
             {
+                val packageWrapper = PackageWrapper(PsiManager.getInstance(project), packageName)
+                val destination = destinationBox.selectDirectory(packageWrapper, false) ?: return@executeCommand
                 val direction = resolveFile(
                     project,
-                    (destinationBox.childComponent.selectedItem as DirectoryChooser.ItemWrapper).directory,
+                    getTargetDirectory(destination),
                     packageName,
                 )
 
@@ -91,6 +97,14 @@ class ImplementExpectPlatformFixDialog(
             title, null
         )
     }
+
+    private fun getTargetDirectory(destination: MoveDestination) =
+        destination.getTargetDirectory(
+            PackageUtil.findPossiblePackageDirectoryInModule(
+                ModuleUtil.findModuleForPsiElement(method),
+                packageName
+            )
+        )
 
     companion object {
         fun resolveFile(project: Project, selection: PsiDirectory, packageName: String): PsiDirectory {
