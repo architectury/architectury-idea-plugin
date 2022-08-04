@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "dev.architectury"
-version = "1.6.1"
+version = "1.6.2"
 
 repositories {
     mavenCentral()
@@ -31,6 +31,6 @@ tasks {
 
     patchPluginXml {
         sinceBuild.set("221")
-        untilBuild.set("221.*")
+        untilBuild.set("222.*")
     }
 }
