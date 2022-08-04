@@ -1,10 +1,10 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.jetbrains.intellij") version "1.5.3"
+    id("org.jetbrains.intellij") version "1.7.0"
     // Corresponds to IDEA 2022.1, see KotlinVersion class in ideaIC/3rd-party-rt.jar
     kotlin("jvm") version "1.6.10"
-    id("org.jmailen.kotlinter") version "3.6.0"
+    id("org.jmailen.kotlinter") version "3.11.1"
 }
 
 group = "dev.architectury"
