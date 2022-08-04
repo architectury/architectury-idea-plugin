@@ -129,7 +129,7 @@ fun <V : Any> Map<Platform, V>.getWithPlatformFallback(platform: Platform): V? =
 /**
  * Gets the searching scope for searching for classes related to the [element].
  * If the element's corresponding module is not null (= an element in this project),
- * uses the project scope. Otherwise uses the all scope.
+ * uses the project scope. Otherwise, uses the all scope.
  */
 private fun getScopeFor(element: PsiElement): GlobalSearchScope =
     if (ModuleUtil.findModuleForPsiElement(element) != null) GlobalSearchScope.projectScope(element.project)

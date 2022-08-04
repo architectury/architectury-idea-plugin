@@ -24,7 +24,7 @@ object KotlinPsiMethodConverters {
             when {
                 element.isGetter -> element.node.findChildByType(KtTokens.GET_KEYWORD)?.psi
                 element.isSetter -> element.node.findChildByType(KtTokens.SET_KEYWORD)?.psi
-                else -> null // shouldn't happen but it doesn't hurt to be careful
+                else -> null // shouldn't happen, but it doesn't hurt to be careful
             } ?: super.getPreferredLeafElement(element)
     }
 }

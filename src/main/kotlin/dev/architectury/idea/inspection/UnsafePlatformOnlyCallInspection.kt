@@ -22,7 +22,7 @@ class UnsafePlatformOnlyCallInspection : LocalInspectionTool() {
 
                 val calledMethod = expression.resolveMethod()
                 if (calledMethod == null) {
-                    LOGGER.warn("Could not resolve method for $calledMethod")
+                    LOGGER.warn("Could not resolve method for $expression")
                     return
                 }
 
