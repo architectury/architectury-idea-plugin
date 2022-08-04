@@ -34,3 +34,11 @@ tasks {
         untilBuild.set("222.*")
     }
 }
+
+kotlinter {
+    disabledRules = arrayOf(
+        "filename",
+        "argument-list-wrapping",
+        "trailing-comma",
+    )
+}
