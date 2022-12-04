@@ -30,7 +30,7 @@ class ImplementExpectPlatformFixDialog(
     private val platform: Platform,
     private val packageName: String,
     private val method: PsiMethod,
-    defaultDirectory: PsiDirectory?,
+    defaultDirectory: PsiDirectory?
 ) : DialogWrapper(project, true) {
     private val destinationBox: DestinationFolderComboBox = object : DestinationFolderComboBox() {
         override fun getTargetPackage(): String {
@@ -85,7 +85,7 @@ class ImplementExpectPlatformFixDialog(
                 val direction = resolveFile(
                     project,
                     getTargetDirectory(destination),
-                    packageName,
+                    packageName
                 )
 
                 val className = platform.getImplementationName(method.containingClass!!)

@@ -20,7 +20,7 @@ enum class Platform(
     val fallbackPlatforms: List<Platform> = emptyList()
 ) {
     FABRIC(PlatformIds.FABRIC, "platform.fabric", "net.fabricmc.api"),
-    FORGE(PlatformIds.FORGE, "platform.forge", "net.minecraftforge.common"),
+    FORGE(PlatformIds.FORGE, "platform.forge", "net.minecraftforge.common")
     // QUILT(PlatformIds.QUILT, "platform.quilt", "org.quiltmc", listOf(FABRIC)),
     ;
 
