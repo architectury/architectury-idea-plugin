@@ -108,8 +108,11 @@ val PsiMethod.platformOnlyPlatforms: Set<String>?
  */
 val PsiClass.binaryName: String?
     get() =
-        if (containingClass != null) containingClass!!.binaryName + "$" + name
-        else qualifiedName
+        if (containingClass != null) {
+            containingClass!!.binaryName + "$" + name
+        } else {
+            qualifiedName
+        }
 
 /**
  * Gets a sequence of this class and all its inner classes, recursed infinitely.
@@ -132,5 +135,8 @@ fun <V : Any> Map<Platform, V>.getWithPlatformFallback(platform: Platform): V? =
  * uses the project scope. Otherwise uses the all scope.
  */
 private fun getScopeFor(element: PsiElement): GlobalSearchScope =
-    if (ModuleUtil.findModuleForPsiElement(element) != null) GlobalSearchScope.projectScope(element.project)
-    else GlobalSearchScope.allScope(element.project)
+    if (ModuleUtil.findModuleForPsiElement(element) != null) {
+        GlobalSearchScope.projectScope(element.project)
+    } else {
+        GlobalSearchScope.allScope(element.project)
+    }
