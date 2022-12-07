@@ -25,6 +25,7 @@ dependencies {
 intellij {
     version.set("2022.1")
     plugins.set(listOf("java", "Kotlin"))
+    updateSinceUntilBuild.set(false)
 }
 
 tasks {
@@ -42,7 +43,6 @@ tasks {
 
     patchPluginXml {
         sinceBuild.set("221")
-        untilBuild.set("223.*")
     }
 }
 
