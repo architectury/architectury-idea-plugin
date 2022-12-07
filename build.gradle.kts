@@ -50,6 +50,5 @@ kotlinter {
     disabledRules = arrayOf(
         "filename",
         "argument-list-wrapping",
-        "trailing-comma",
     )
 }
