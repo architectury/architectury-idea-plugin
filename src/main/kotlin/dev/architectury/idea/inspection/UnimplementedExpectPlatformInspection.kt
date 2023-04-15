@@ -23,7 +23,7 @@ class UnimplementedExpectPlatformInspection : LocalInspectionTool() {
                         if (!platform.isIn(method.project)) return@filter false
 
                         val methods = allPlatformMethods.getWithPlatformFallback(platform)
-                        methods == null || methods.isEmpty()
+                        methods.isNullOrEmpty()
                     }
 
                     if (missingPlatforms.isNotEmpty()) {
