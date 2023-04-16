@@ -52,5 +52,3 @@ kotlinter {
         "argument-list-wrapping",
     )
 }
-
-java.toolchain.languageVersion.set(JavaLanguageVersion.of(17))
