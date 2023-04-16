@@ -34,7 +34,7 @@ tasks {
     }
 
     withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "11"
+        kotlinOptions.jvmTarget = "17"
         kotlinOptions {
             apiVersion = kotlinLanguageVersion
             languageVersion = kotlinLanguageVersion
@@ -42,7 +42,7 @@ tasks {
     }
 
     patchPluginXml {
-        sinceBuild.set("221")
+        sinceBuild.set("231")
     }
 }
 
@@ -52,3 +52,5 @@ kotlinter {
         "argument-list-wrapping",
     )
 }
+
+java.toolchain.languageVersion.set(JavaLanguageVersion.of(17))
