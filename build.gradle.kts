@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.jetbrains.intellij") version "1.10.0"
+    id("org.jetbrains.intellij") version "1.16.0"
     kotlin("jvm") version "1.7.21"
     id("org.jmailen.kotlinter") version "3.12.0"
 }
@@ -11,7 +11,7 @@ val kotlinVersion = "1.6.10"
 val kotlinLanguageVersion = kotlinVersion.substringBeforeLast('.')
 
 group = "dev.architectury"
-version = "1.6.3"
+version = "1.6.4"
 
 repositories {
     mavenCentral()
