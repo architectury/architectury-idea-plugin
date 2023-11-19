@@ -21,8 +21,8 @@ enum class Platform(
 ) {
     FABRIC(PlatformIds.FABRIC, "platform.fabric", "net.fabricmc.api"),
     FORGE(PlatformIds.FORGE, "platform.forge", "net.minecraftforge.common"),
-    // QUILT(PlatformIds.QUILT, "platform.quilt", "org.quiltmc", listOf(FABRIC)),
     NEOFORGE(PlatformIds.NEOFORGE, "platform.neoforge", "net.neoforged.neoforge")
+    // QUILT(PlatformIds.QUILT, "platform.quilt", "org.quiltmc", listOf(FABRIC))
     ;
 
     /**
